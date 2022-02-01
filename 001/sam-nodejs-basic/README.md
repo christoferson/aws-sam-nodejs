@@ -81,10 +81,10 @@ The SAM CLI reads the application template to determine the API's routes and the
 
 ```yaml
       Events:
-        HelloWorld:
+        Echo:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /ping
             Method: get
 ```
 
