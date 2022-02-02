@@ -11,6 +11,7 @@ Globals:
     Timeout: 3
 
 Resources:
+
   LambdaFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -25,6 +26,21 @@ Resources:
             Path: /ping
             Method: get
 
+  LambdaFunctionFind:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo-app/
+      Handler: find.lambdaHandler
+      Runtime: nodejs14.x
+      #AutoPublishAlias: live
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo/{id}
+            Method: get
+
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -33,8 +49,8 @@ Outputs:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping/"
   LambdaFunction:
-    Description: "Hello World Lambda Function ARN"
+    Description: "Lambda Function ARN"
     Value: !GetAtt LambdaFunction.Arn
   LambdaFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for the Lambda Function"
     Value: !GetAtt LambdaFunctionRole.Arn
