@@ -12,6 +12,17 @@ Globals:
 
 Resources:
 
+  # Lambda Layer for the Lambda functions
+  LambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: demo-cmn-layer
+      CompatibleRuntimes:
+        - nodejs14.x
+    Metadata: # If you don't include the Metadata resource attribute section, AWS SAM doesn't build the layer. Instead, it copies the build artifacts from the location specified in the CodeUri property of the layer resource.
+      BuildMethod: nodejs14.x
+      #BuildArchitecture: arm64
+
   LambdaFunctionList:
     Type: AWS::Serverless::Function
     Properties:
