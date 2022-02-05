@@ -18,15 +18,41 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  # This is a Lambda function config associated with the source code: hello-from-lambda.js
-  helloFromLambdaFunction:
+  LambdaFunctionFind:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
+      CodeUri: demo-app/
+      Handler: find.lambdaHandler
       Runtime: nodejs14.x
-      MemorySize: 128
-      Timeout: 100
-      Description: A Lambda function that returns a static string.
-      Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
-        - AWSLambdaBasicExecutionRole
+      #AutoPublishAlias: live
+      #Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo/{id}
+            Method: get
+
+  LambdaFunctionEdit:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo-app-edit/
+      Handler: find.lambdaHandler
+      Runtime: nodejs14.x
+      #AutoPublishAlias: live
+      #Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo/{id}
+            Method: post
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  EchoApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/echo/"
+           
