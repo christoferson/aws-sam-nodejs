@@ -10,6 +10,25 @@ const dynamodb = require('aws-sdk/clients/dynamodb');
 const docClient = new dynamodb.DocumentClient();
 
 exports.lambdaHandler = async (event, context) => {
+
+    if (event.httpMethod !== 'GET') {
+        throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
+    }
+
+    let items = {};
+
+    try {
+        var params = {
+            TableName : tableName
+        };
+        const data = await docClient.scan(params).promise();
+        items = data.Items;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+
+
     try {
         const ret = await axios(url);
         response = {
@@ -17,7 +36,9 @@ exports.lambdaHandler = async (event, context) => {
             'body': JSON.stringify({
                 message: 'List abra kadabra',
                 location: ret.data.trim(),
-                dynamotable: tableName
+                dynamotable: tableName,
+                //items: JSON.stringify(items)
+                items: items
             })
         };
     } catch (err) {
