@@ -12,7 +12,7 @@ const docClient = new dynamodb.DocumentClient();
 exports.lambdaHandler = async (event, context) => {
 
     if (event.httpMethod !== 'GET') {
-        throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
+        throw new Error(`List only accepts GET method. Input: ${event.httpMethod}`);
     }
 
     let items = {};

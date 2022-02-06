@@ -61,6 +61,9 @@ Resources:
           Properties:
             Path: /echo/{id}
             Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: "EchoTable"
 
   LambdaFunctionEdit:
     Type: AWS::Serverless::Function
