@@ -7,16 +7,25 @@ Description: >
   
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
+  Api:
+    OpenApiVersion: 3.0.2
   Function:
     Timeout: 3
+    #MemorySize: 256
     Layers:
       - Ref: LambdaLayer
     Tracing: Active
     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
       Variables:
-        ECHO_TABLE: EchoTable
+        ECHO_TABLE: Character2
         
 Resources:
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      #Name: ApiGateway-Api
+      StageName: dev
 
   # Lambda Layer for the Lambda functions
   LambdaLayer:
@@ -43,9 +52,10 @@ Resources:
           Properties:
             Path: /echo
             Method: get
+            RestApiId: !Ref Api
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: "EchoTable"
+            TableName: "Character2"
 
   LambdaFunctionGet:
     Type: AWS::Serverless::Function
@@ -61,9 +71,10 @@ Resources:
           Properties:
             Path: /echo/{id}
             Method: get
+            RestApiId: !Ref Api
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: "EchoTable"
+            TableName: "Character2"
 
   LambdaFunctionEdit:
     Type: AWS::Serverless::Function
@@ -79,6 +90,8 @@ Resources:
           Properties:
             Path: /echo/{id}
             Method: post
+            RestApiId: !Ref Api
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -86,5 +99,5 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   EchoApi:
     Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/echo/"
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/dev/echo/"
 
