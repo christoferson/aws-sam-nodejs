@@ -92,6 +92,23 @@ Resources:
             Method: post
             RestApiId: !Ref Api
 
+  LogGroupFunctionList:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionList}
+      RetentionInDays: 1
+
+  LogGroupFunctionGet:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionGet}
+      RetentionInDays: 1
+
+  LogGroupFunctionEdit:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionEdit}
+      RetentionInDays: 1
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
