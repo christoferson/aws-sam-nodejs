@@ -1,5 +1,3 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
 let response;
 
 const tableName = process.env.ECHO_TABLE;
@@ -9,7 +7,7 @@ const dynamodb = require('aws-sdk/clients/dynamodb');
 const docClient = new dynamodb.DocumentClient();
 
 const mydateutils = require("/opt/nodejs/mydateutils");
-const getAddressFromZipCode = require("/opt/nodejs/lib/getAddressFromZipCode");
+const fetchhttpdata = require("/opt/nodejs/lib/fetchhttpdata");
 
 exports.lambdaHandler = async (event, context) => {
 
@@ -37,8 +35,8 @@ exports.lambdaHandler = async (event, context) => {
     }
 
 
-    let x = await getAddressFromZipCode("8u3453");
     let y = await mydateutils.currentDate();
+    let ipaddr = await fetchhttpdata('http://checkip.amazonaws.com/');
 
     try {
         // const ret = await axios(url);
@@ -46,9 +44,8 @@ exports.lambdaHandler = async (event, context) => {
             'statusCode': 200,
             'body': JSON.stringify({
                 message: 'Get abra kadabra',
-                layerfunction: x,
                 layerfunctiony: y,
-                // location: ret.data.trim()
+                location: ipaddr,
                 item: item
             })
         };

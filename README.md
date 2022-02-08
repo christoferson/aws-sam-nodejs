@@ -48,3 +48,9 @@ Reference the API in the Function using RestApiId property
     Properties:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionEdit}
       RetentionInDays: 1
+
+
+### Exporting Functions form Common Layer
+
+Lambda will expose modules under /opt path
+Source: https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
