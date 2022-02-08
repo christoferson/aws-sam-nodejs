@@ -1,8 +1,8 @@
 {
-  "name": "sam-nodejs-rest-edit",
+  "name": "sam-nodejs-rest-cmn",
   "version": "1.0.0",
   "description": "Basic NodeJS Lambda",
-  "main": "app.js",
+  "main": "mydateutils.js",
   "repository": "https://github.com/christoferson/aws-sam-nodejs",
   "author": "SAM CLI",
   "license": "MIT",
