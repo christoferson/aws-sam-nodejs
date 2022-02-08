@@ -10,10 +10,12 @@ Globals:
   Api:
     OpenApiVersion: 3.0.2
   Function:
+    Runtime: nodejs14.x
     Timeout: 3
-    #MemorySize: 256
+    MemorySize: 128
     Layers:
       - Ref: LambdaLayer
+    Handler: app.lambdaHandler
     Tracing: Active
     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
       Variables:
@@ -42,8 +44,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: demo-app-list/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
       #AutoPublishAlias: live
       #Role: !GetAtt LambdaExecutionRole.Arn
       Events:
@@ -61,8 +61,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: demo-app-get/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
       #AutoPublishAlias: live
       #Role: !GetAtt LambdaExecutionRole.Arn
       Events:
@@ -80,8 +78,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: demo-app-edit/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
       #AutoPublishAlias: live
       #Role: !GetAtt LambdaExecutionRole.Arn
       Events:
