@@ -20,7 +20,11 @@ Globals:
     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
       Variables:
         ECHO_TABLE: Character2
-        
+        STAGE: dev
+    Tags:
+      environment: "dev"
+      owner: "cc"
+
 Resources:
 
   Api:
@@ -28,11 +32,13 @@ Resources:
     Properties:
       #Name: ApiGateway-Api
       StageName: dev
+      Description: "Api"
 
   # Lambda Layer for the Lambda functions
   LambdaLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
+      Description: "Commmon Layer"
       ContentUri: demo-cmn-layer
       CompatibleRuntimes:
         - nodejs14.x
@@ -43,6 +49,8 @@ Resources:
   LambdaFunctionList:
     Type: AWS::Serverless::Function
     Properties:
+      #FunctionName: xxx
+      Description: "List Function"
       CodeUri: demo-app-list/
       #AutoPublishAlias: live
       #Role: !GetAtt LambdaExecutionRole.Arn
@@ -56,6 +64,9 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: "Character2"
+    Environment:
+      Variables:
+        FOO: BAR
 
   LambdaFunctionGet:
     Type: AWS::Serverless::Function
@@ -105,6 +116,22 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionEdit}
       RetentionInDays: 1
+
+  SimpleTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      # TableName: my-table
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      Tags:
+        Department: Engineering
+        AppType: Serverless
+      SSESpecification:
+        SSEEnabled: true   
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
