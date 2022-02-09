@@ -19,7 +19,7 @@ Globals:
     Tracing: Active
     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
       Variables:
-        ECHO_TABLE: Character2
+        ECHO_TABLE: !Ref SimpleTable
         STAGE: dev
     Tags:
       environment: "dev"
@@ -63,7 +63,7 @@ Resources:
             RestApiId: !Ref Api
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: "Character2"
+            TableName: !Ref SimpleTable
     Environment:
       Variables:
         FOO: BAR
@@ -83,7 +83,7 @@ Resources:
             RestApiId: !Ref Api
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: "Character2"
+            TableName: !Ref SimpleTable
 
   LambdaFunctionEdit:
     Type: AWS::Serverless::Function
@@ -98,6 +98,9 @@ Resources:
             Path: /echo/{id}
             Method: post
             RestApiId: !Ref Api
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SimpleTable
 
   LogGroupFunctionList:
     Type: AWS::Logs::LogGroup

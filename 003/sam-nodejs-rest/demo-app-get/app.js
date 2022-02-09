@@ -23,8 +23,7 @@ exports.lambdaHandler = async (event, context) => {
 
         var params = {
             TableName : tableName,
-            //Key: { id: id },
-            Key: { Region: "US", CharacterName: id },
+            Key: { id: id },
           };
           const data = await docClient.get(params).promise();
           item = data.Item;
