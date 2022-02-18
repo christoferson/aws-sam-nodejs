@@ -55,6 +55,15 @@ Reference the API in the Function using RestApiId property
 Lambda will expose modules under /opt path
 Source: https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
 
+### Code Deploy Integration using Lambda Alias and Version
+
+Setup CodeDeploy that will initiate LinearDeployment 10 percent every 2 minutes
+
+      AutoPublishAlias: live
+      DeploymentPreference:
+       Type: Linear10PercentEvery2Minutes 
+
+
 ## Refernces
 
 ### SAM Policy Template List
