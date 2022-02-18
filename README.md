@@ -54,3 +54,9 @@ Reference the API in the Function using RestApiId property
 
 Lambda will expose modules under /opt path
 Source: https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
+
+## Refernces
+
+### SAM Policy Template List
+
+https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
