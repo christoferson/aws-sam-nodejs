@@ -9,10 +9,17 @@ Basic Single Lambda Example
 
 Rest Service Multi Lambda Example
 
-## 003 sam-nodejs-rest
+## 003 sam-nodejs-rest + common layer
 
 With Layer for Common Dependency
 
+## 004 sam-nodejs-rest + lambda authorizer
+
+With Lambda Authorizer
+
+curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
+curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: deny"
+curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
 
 ## Notes
 
@@ -63,8 +70,15 @@ Setup CodeDeploy that will initiate LinearDeployment 10 percent every 2 minutes
       DeploymentPreference:
        Type: Linear10PercentEvery2Minutes 
 
+### Lambda Authorizers
 
-## Refernces
+Disable Authorizer for specific method
+
+            Auth:
+              Authorizer: NONE 
+
+
+## References
 
 ### SAM Policy Template List
 
