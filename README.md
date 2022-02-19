@@ -15,11 +15,22 @@ With Layer for Common Dependency
 
 ## 004 sam-nodejs-rest + lambda authorizer
 
-With Lambda Authorizer
+With Lambda Authorizer (Token Based)
 
+Curl Commands (List method does not require Authorization)
+curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: deny"
-curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
+curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: unauthorized"
+
+curl -X POST -H "Content-Type: application/json" ^
+-d "{\"Name\": \"Adria\", \"Level\": \"42\"}" ^
+https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
+
+
+Api Gateway Authorizer Types:
+1. token-based Lambda authorizer function
+2. request-based Lambda authorizer function
 
 ## Notes
 
@@ -83,3 +94,19 @@ Disable Authorizer for specific method
 ### SAM Policy Template List
 
 https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+
+## Todo
+
+Gateway Responses
+
+CORS Configurtion
+
+Cognito Authorizer
+
+Usage Plans
+
+API Keys
+
+CloudWatch log role ARN
+
+Authorizer Role
