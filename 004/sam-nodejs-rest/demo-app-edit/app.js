@@ -47,18 +47,27 @@ exports.lambdaHandler = async (event, context) => {
     try {
 
         const body = JSON.parse(event.body);
+        let cversion = Number(body.Version);
+        let nversion = cversion + 1;
+        
+        console.log(`Edit Item. ID=${id} Version=${body.Version}`);          
+        
             
         let params = {
             TableName : tableName,
             Key: { id: id },
-            UpdateExpression: "set #Level = :level, #Language = :language",
+            UpdateExpression: "set #Level = :level, #Language = :language, #Version = :version",
+            ConditionExpression: "attribute_exists(#Version) AND #Version = :current_version",
             ExpressionAttributeNames: {
                 "#Level": "Level",
-                "#Language": "Language"
+                "#Language": "Language",
+                "#Version": "Version"
             },
             ExpressionAttributeValues: {
                 ":level": body.Level,
-                ":language": body.Language
+                ":language": body.Language,
+                ":version" : nversion,
+                ":current_version": cversion,
             }
           };
         
@@ -66,7 +75,15 @@ exports.lambdaHandler = async (event, context) => {
 
     } catch (err) {
         console.log(err);
-        return err;
+
+        let errresponse = {
+            'statusCode': 401,
+            'body': JSON.stringify({
+                message: `Edit - Error=${err}`
+            })
+        };        
+        return errresponse;
+        
     }    
     
     response = {

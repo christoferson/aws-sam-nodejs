@@ -23,10 +23,15 @@ curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Autho
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: deny"
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: unauthorized"
 
+Edit - No Locking
 curl -X POST -H "Content-Type: application/json" ^
 -d "{\"Name\": \"Adria\", \"Level\": \"42\"}" ^
 https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
 
+Edit - Add Optimistic Locking
+curl -X POST -H "Content-Type: application/json" ^
+-d "{\"Name\": \"Adria\", \"Level\": \"45\", \"Language\": \"EN\", \"Version\": \"1\"}" ^
+https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/001 --header "Authorization: allow"
 
 Api Gateway Authorizer Types:
 1. token-based Lambda authorizer function
