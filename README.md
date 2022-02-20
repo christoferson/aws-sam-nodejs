@@ -93,6 +93,10 @@ Disable Authorizer for specific method
             Auth:
               Authorizer: NONE 
 
+### Edit Optimistic Locking
+
+ConditionExpression: "attribute_exists(#Version) AND #Version = :current_version", 
+UpdateExpression: "set #Version = :version",
 
 ## References
 

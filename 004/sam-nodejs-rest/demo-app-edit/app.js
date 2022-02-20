@@ -30,7 +30,15 @@ exports.lambdaHandler = async (event, context) => {
 
     } catch (err) {
         console.log(err);
-        return err;
+
+        let errresponse = {
+            'statusCode': 401,
+            'body': JSON.stringify({
+                message: `Edit - Error=${err}`
+            })
+        };        
+        return errresponse;
+
     }
     
     if (item === undefined) {
@@ -51,7 +59,6 @@ exports.lambdaHandler = async (event, context) => {
         let nversion = cversion + 1;
         
         console.log(`Edit Item. ID=${id} Version=${body.Version}`);          
-        
             
         let params = {
             TableName : tableName,
