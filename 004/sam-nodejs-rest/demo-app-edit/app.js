@@ -12,14 +12,14 @@ exports.lambdaHandler = async (event, context) => {
     }
 
     const id = event.pathParameters.id;
-    
-    console.log(`Edit Item. ID=${id}`);
+
+    console.log(`Edit Item. ID=${id} Body=${event.body}`);
 
     let item = {};
 
     try {
 
-        var params = {
+        let params = {
             TableName : tableName,
             Key: { id: id },
           };
@@ -35,21 +35,48 @@ exports.lambdaHandler = async (event, context) => {
     
     if (item === undefined) {
         console.log(`Edit Item. Item ${id} not found.`);
-        response = {
+        let errresponse = {
             'statusCode': 401,
             'body': JSON.stringify({
                 message: `Edit - Unregistered Item. ID=${id}`
             })
         };        
-    } else {
-        response = {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                message: `Edit - Item Modified. ID=${id}`,
-                item: item
-            })
-        };
+        return errresponse;
     }
+    
+    try {
+
+        const body = JSON.parse(event.body);
+            
+        let params = {
+            TableName : tableName,
+            Key: { id: id },
+            UpdateExpression: "set #Level = :level, #Language = :language",
+            ExpressionAttributeNames: {
+                "#Level": "Level",
+                "#Language": "Language"
+            },
+            ExpressionAttributeValues: {
+                ":level": body.Level,
+                ":language": body.Language
+            }
+          };
+        
+        await docClient.update(params).promise();
+
+    } catch (err) {
+        console.log(err);
+        return err;
+    }    
+    
+    response = {
+        'statusCode': 200,
+        'body': JSON.stringify({
+            message: `Edit - Item Modified. ID=${id}`,
+            item: item
+        })
+    };
+    
 
     return response;
 
