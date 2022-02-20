@@ -18,6 +18,7 @@ With Layer for Common Dependency
 With Lambda Authorizer (Token Based)
 
 Curl Commands (List method does not require Authorization)
+
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: allow"
 curl https://xxx.execute-api.eu-west-1.amazonaws.com/dev/echo/35 --header "Authorization: deny"
@@ -40,19 +41,27 @@ Api Gateway Authorizer Types:
 ## Notes
 
 ### Prevent SAM from creating Stage StageName
+
+```yaml
 Globals:
   Api:
     OpenApiVersion: 3.0.2
+```
 
 ### Specify the StageName instead of the default Prod
 
 Define the API
+
+```yaml
   Api:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
+```
 
 Reference the API in the Function using RestApiId property   
+
+```yaml
   LambdaFunctionList:
     Type: AWS::Serverless::Function
     Properties:
@@ -63,15 +72,17 @@ Reference the API in the Function using RestApiId property
           Properties:
             ...
             RestApiId: !Ref Api
+```
 
 ### Customize Lambda Log Retention Period
 
+```yaml
   LogGroupFunctionEdit:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${LambdaFunctionEdit}
       RetentionInDays: 1
-
+```
 
 ### Exporting Functions form Common Layer
 
@@ -82,21 +93,81 @@ Source: https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
 
 Setup CodeDeploy that will initiate LinearDeployment 10 percent every 2 minutes
 
+```yaml
       AutoPublishAlias: live
       DeploymentPreference:
        Type: Linear10PercentEvery2Minutes 
+```
 
-### Lambda Authorizers
+### Lambda Autorizer - Define Authorizer (MyLambdaAuthorizer) in Api Gateway
 
-Disable Authorizer for specific method
+```yaml
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      ...
+      Auth:
+        DefaultAuthorizer: MyLambdaAuthorizer
+        Authorizers:
+          MyLambdaAuthorizer:
+            FunctionArn: !GetAtt LambdaAuthorizerFunction.Arn
+            Identity:
+              ReauthorizeEvery: 0
+```
 
+### Lambda Authorizer - Disable Authorizer for specific method
+
+```yaml
+  LambdaFunctionList:
+    Type: AWS::Serverless::Function
+    Properties:
+      ...
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            ...
             Auth:
-              Authorizer: NONE 
+              Authorizer: NONE # Disable Authorizers
+```
 
 ### Edit Optimistic Locking
 
-ConditionExpression: "attribute_exists(#Version) AND #Version = :current_version", 
-UpdateExpression: "set #Version = :version",
+Current version is cversion, New version is nversion
+
+```js
+  let params = {
+      TableName : tableName,
+      Key: { id: id },
+      UpdateExpression: "set #Version = :version",
+      ConditionExpression: "attribute_exists(#Version) AND #Version = :current_version",
+      ExpressionAttributeNames: { "#Version": "Version" },
+      ExpressionAttributeValues: { ":current_version": cversion, ":version" : nversion},
+      ReturnValues: "ALL_NEW",
+  };
+
+  const result = await docClient.update(params).promise();
+```
+
+### Return Values after updating Dynamo Item
+
+Set the ReturnValues parameter to select the type of value to return.
+
+```js
+params {
+   ...
+   ReturnValues: "ALL_NEW"
+}
+const result = await docClient.update(params).promise();
+// Access ReturnValues from result.Attributes
+item = {
+    "id" : id,
+    "Language": result.Attributes.Language,
+    "Level": result.Attributes.Level,
+    "Version": result.Attributes.Version,
+    "Name": result.Attributes.Name            
+};
+```
 
 ## References
 
@@ -106,16 +177,18 @@ https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/s
 
 ## Todo
 
-Gateway Responses
+- [ ]  Gateway Responses
 
-CORS Configurtion
+- [ ] CORS Configurtion
 
-Cognito Authorizer
+- [ ] Cognito Authorizer
 
-Usage Plans
+- [ ] Usage Plans
 
-API Keys
+- [ ] API Keys
 
-CloudWatch log role ARN
+- [ ] CloudWatch log role ARN
 
-Authorizer Role
+- [ ] Authorizer Role
+
+- [ ] Add StageName as Parameter
