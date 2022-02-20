@@ -75,10 +75,22 @@ exports.lambdaHandler = async (event, context) => {
                 ":language": body.Language,
                 ":version" : nversion,
                 ":current_version": cversion,
-            }
+            },
+            ReturnValues: "ALL_NEW",
           };
         
-        await docClient.update(params).promise();
+        const result = await docClient.update(params).promise();
+        
+        //console.log(`Resutlt:${JSON.stringify(result)}`);
+        
+        item = {
+            "id" : id,
+            "Language": result.Attributes.Language,
+            "Level": result.Attributes.Level,
+            "Version": result.Attributes.Version,
+            "Name": result.Attributes.Name            
+        };
+
 
     } catch (err) {
         console.log(err);
@@ -103,6 +115,5 @@ exports.lambdaHandler = async (event, context) => {
     
 
     return response;
-
     
 };
