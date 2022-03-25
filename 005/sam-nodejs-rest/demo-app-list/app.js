@@ -34,7 +34,7 @@ exports.lambdaHandler = async (event, context) => {
         response = {
             'statusCode': 200,
             'body': JSON.stringify({
-                message: 'List abra kadabra',
+                message: 'List abra kadabra V2',
                 location: ret.data.trim(),
                 dynamotable: tableName,
                 //items: JSON.stringify(items)

@@ -63,7 +63,9 @@ Resources:
       #FunctionName: xxx
       Description: "List Function"
       CodeUri: demo-app-list/
-      #AutoPublishAlias: live
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: Linear10PercentEvery1Minute
       #Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         EchoFind:
