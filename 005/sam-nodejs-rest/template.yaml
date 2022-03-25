@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-nodejs-rest
+
+  SAM Template for sam-nodejs-rest
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Api:
+    OpenApiVersion: 3.0.2
+    #Cors:
+    #  AllowMethods: "'OPTIONS,PUT'"
+    #  AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+    #  AllowOrigin: "'*'"    
+  Function:
+    Runtime: nodejs14.x
+    Timeout: 3
+    MemorySize: 128
+    Layers:
+      - Ref: LambdaLayer
+    Handler: app.lambdaHandler
+    Tracing: Active
+    Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      Variables:
+        ECHO_TABLE: !Ref SimpleTable
+        STAGE: dev
+    Tags:
+      environment: "dev"
+      owner: "cc"
+
+Resources:
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      #Name: ApiGateway-Api
+      StageName: dev
+      Description: "Api"
+      Auth:
+        DefaultAuthorizer: MyLambdaAuthorizer
+        Authorizers:
+          MyLambdaAuthorizer:
+            FunctionArn: !GetAtt LambdaAuthorizerFunction.Arn
+            Identity:
+              ReauthorizeEvery: 0
+
+  # Lambda Layer for the Lambda functions
+  LambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: "Commmon Layer"
+      ContentUri: demo-cmn-layer
+      CompatibleRuntimes:
+        - nodejs14.x
+    Metadata: # If you don't include the Metadata resource attribute section, AWS SAM doesn't build the layer. Instead, it copies the build artifacts from the location specified in the CodeUri property of the layer resource.
+      BuildMethod: nodejs14.x
+      #BuildArchitecture: arm64
+
+  LambdaFunctionList:
+    Type: AWS::Serverless::Function
+    Properties:
+      #FunctionName: xxx
+      Description: "List Function"
+      CodeUri: demo-app-list/
+      #AutoPublishAlias: live
+      #Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo
+            Method: get
+            RestApiId: !Ref Api
+            Auth:
+              Authorizer: NONE            
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SimpleTable
+    Environment:
+      Variables:
+        FOO: BAR
+
+  LambdaFunctionGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo-app-get/
+      #AutoPublishAlias: live
+      #Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo/{id}
+            Method: get
+            RestApiId: !Ref Api
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SimpleTable
+
+  LambdaFunctionEdit:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo-app-edit/
+      #AutoPublishAlias: live
+      #Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        EchoFind:
+          Type: Api
+          Properties:
+            Path: /echo/{id}
+            Method: post
+            RestApiId: !Ref Api
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SimpleTable
+
+  LogGroupFunctionList:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionList}
+      RetentionInDays: 1
+
+  LogGroupFunctionGet:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionGet}
+      RetentionInDays: 1
+
+  LogGroupFunctionEdit:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionEdit}
+      RetentionInDays: 1
+
+  SimpleTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      # TableName: my-table
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      Tags:
+        Department: Engineering
+        AppType: Serverless
+      SSESpecification:
+        SSEEnabled: true   
+
+  # Lambda Authorizer
+  LambdaAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: demo-authorizer/
+      #Handler: authorizer.lambda_handler
+
+  LogGroupLambdaAuthorizerFunction:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaAuthorizerFunction}
+      RetentionInDays: 1
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  EchoApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/dev/echo/"
+
