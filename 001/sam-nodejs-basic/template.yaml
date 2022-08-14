@@ -32,7 +32,7 @@ Resources:
     Properties:
       CodeUri: demo-app/
       Handler: app.lambdaHandler
-      Runtime: nodejs14.x
+      Runtime: nodejs16.x
       #AutoPublishAlias: 
       Role: !GetAtt LambdaExecutionRole.Arn
       Events:
@@ -47,7 +47,7 @@ Resources:
     Properties:
       CodeUri: demo-app/
       Handler: find.lambdaHandler
-      Runtime: nodejs14.x
+      Runtime: nodejs16.x
       #AutoPublishAlias: live
       Role: !GetAtt LambdaExecutionRole.Arn
       Events:

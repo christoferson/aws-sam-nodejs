@@ -14,7 +14,7 @@ Globals:
     #  AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
     #  AllowOrigin: "'*'"    
   Function:
-    Runtime: nodejs14.x
+    Runtime: nodejs16.x
     Timeout: 3
     MemorySize: 128
     Layers:
@@ -52,9 +52,9 @@ Resources:
       Description: "Commmon Layer"
       ContentUri: demo-cmn-layer
       CompatibleRuntimes:
-        - nodejs14.x
+        - nodejs16.x
     Metadata: # If you don't include the Metadata resource attribute section, AWS SAM doesn't build the layer. Instead, it copies the build artifacts from the location specified in the CodeUri property of the layer resource.
-      BuildMethod: nodejs14.x
+      BuildMethod: nodejs16.x
       #BuildArchitecture: arm64
 
   LambdaFunctionList:
